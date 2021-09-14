@@ -1,3 +1,10 @@
+from subprocess import Popen
+Popen(["pip", "install", "pyreleaseplugin"]).wait()
+
+from pyreleaseplugin import CleanCommand, ReleaseCommand, PyTest
+from setuptools import find_packages, setup, Command
+
+
 """A setuptools based setup module.
 
 See:
@@ -16,6 +23,22 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 # Arguments marked as "Required" below must be included for upload to PyPI.
 # Fields marked as "Optional" may be commented out.
+
+
+def read(fname):
+    """Utility function to read the README file into the long_description."""
+    return open(os.path.join(os.path.dirname(__file__), fname)).read()
+
+
+install_requires_list = ["twine==3.2.0", 'peppercorn']
+tests_require = ["pytest>=2.9"]
+
+
+version_file = "_version.py"
+with open(version_file) as fp:
+    exec(fp.read())
+
+
 
 setup(
     # This is the name of your project. The first time you publish this
@@ -37,7 +60,12 @@ setup(
     # For a discussion on single-sourcing the version across setup.py and the
     # project code, see
     # https://packaging.python.org/en/latest/single_source_version.html
-    version='2.0.0',  # Required
+#    version='2.0.0',  # Required
+     version=__version__,
+
+    setup_requires=["pyreleaseplugin"],
+    cmdclass={"release": ReleaseCommand, "clean": CleanCommand, "test": PyTest},
+
 
     # This is a one-line description or tagline of what your project does. This
     # corresponds to the "Summary" metadata field:
@@ -143,7 +171,12 @@ setup(
     #
     # For an analysis of "install_requires" vs pip's requirements files see:
     # https://packaging.python.org/en/latest/requirements.html
-    install_requires=['peppercorn'],  # Optional
+    #install_requires=['peppercorn'],  # Optional
+
+
+    install_requires=install_requires_list,
+    tests_require=tests_require,
+
 
     # List additional groups of dependencies here (e.g. development
     # dependencies). Users will be able to install these using the "extras"
@@ -169,7 +202,7 @@ setup(
     # http://docs.python.org/distutils/setupscript.html#installing-additional-files
     #
     # In this case, 'data_file' will be installed into '<sys.prefix>/my_data'
-    data_files=[('my_data', ['data/data_file'])],  # Optional
+    #data_files=[('my_data', ['data/data_file'])],  # Optional
 
     # To provide executable scripts, use entry points in preference to the
     # "scripts" keyword. Entry points provide cross-platform support and allow
